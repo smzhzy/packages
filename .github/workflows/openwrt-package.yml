@@ -1,0 +1,62 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+
+name: package-Update
+
+on:
+  schedule:
+    - cron: 0 19 */2 * *
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: main
+        fetch-depth: 0
+        lfs: true
+
+    - name: Set git identity
+      run : |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+
+    - name: Load latest package
+      run: |
+        rm -fr *
+        git clone https://github.com/xiaorouji/openwrt-passwall-packages.git && cp -rpf ./openwrt-passwall-packages/* ./ ; rm -Rf openwrt-passwall-packages
+        git clone https://github.com/smzhzy/openwrt_vlmcsd.git
+        git clone https://github.com/xsmzhzy/luci-app-vlmcsd.git
+        git clone https://github.com/xiaorouji/openwrt-passwall.git && cp -rpf ./openwrt-passwall/luci-app-passwall ./ ; rm -Rf openwrt-passwall
+        git clone https://github.com/coolsnowwolf/lede.git && cp -rpf ./lede/package/lean/ddns-scripts_aliyun ./ ; rm -Rf lede
+
+
+        rm -Rf */.git */.svn
+        sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' */Makefile
+
+    - name: Apply commit changes
+      run: |
+        echo "# openwrt-package" >> README.md
+        git init
+        git add -A
+        git commit -am "initial commit"
+
+    - name: Push Commits
+      env:
+        DOWNSTREAM_BRANCH: main
+      run: git push -f origin $DOWNSTREAM_BRANCH
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
