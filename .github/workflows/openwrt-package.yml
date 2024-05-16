@@ -36,6 +36,7 @@ jobs:
         git clone https://github.com/xiaorouji/openwrt-passwall-packages.git && cp -rpf ./openwrt-passwall-packages/* ./ ; rm -Rf openwrt-passwall-packages
         git clone https://github.com/smzhzy/openwrt_vlmcsd.git
         git clone https://github.com/xsmzhzy/luci-app-vlmcsd.git
+        git clone https://github.com/jerrykuku/luci-theme-argon.git
         git clone https://github.com/xiaorouji/openwrt-passwall.git && cp -rpf ./openwrt-passwall/luci-app-passwall ./ ; rm -Rf openwrt-passwall
         git clone https://github.com/coolsnowwolf/lede.git && cp -rpf ./lede/package/lean/ddns-scripts_aliyun ./ ; rm -Rf lede
 
